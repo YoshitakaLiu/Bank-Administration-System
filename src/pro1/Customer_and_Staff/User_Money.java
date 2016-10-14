@@ -36,5 +36,4 @@ public class User_Money {
 	public void set_money(double x){//主要用来设置活期存款，活期存款可以随时存取；定期存款存一次就固定下来其各项信息
 		money += x;
 	}
-
 }

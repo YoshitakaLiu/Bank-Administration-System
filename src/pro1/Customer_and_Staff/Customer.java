@@ -63,4 +63,5 @@ public class Customer extends User{
 	public void Reset_pass_user(Service sev_temp,String u_name,User_database database){
 		sev_temp.Reset_pass_user(u_name, database);
 	}
+
 }

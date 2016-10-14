@@ -79,4 +79,5 @@ public class Staff extends User{//各等级之间的员工应该具有集成关系，最低级的员工
 	public void Reset_pass(Service sev_temp,String u_name,User_database database,Staff st){
 		sev_temp.Reset_pass(database, st);
 	}
+
 }
