@@ -6,14 +6,20 @@ import pro1.Customer_and_Staff.*;
 import pro2.Database.User_database;
 
 public class Service {
+	
+	public final int IS_NONE = 0;
+	public final int IS_CUSTOMER = 1;
+	public final int IS_STAFF = 2;
+	
 	//登录界面
 	public void Login(Service sev_temp,User_database database) throws Exception{
 		Customer temp_c = null;
 		Staff temp_s = null;
 		boolean login = false;//用来记录登录是否成功
-		char select;//用来选择服务
+		char select;//用来选择服务  
 		Scanner sc = new Scanner(System.in);
 		String u_name = null;
+		int type = IS_NONE; // determine which type the user is
 //=======================================登录部分=====================================
 		while(true)
 		{
@@ -23,27 +29,48 @@ public class Service {
 				System.out.println("请您登录！输入账号：");
 				sc = new Scanner(System.in);
 				u_name = sc.next();
-				int x=database.get_order(database,u_name);
+				int x=database.get_order(database,u_name); // 获得用户在arraylist中的序号
+				/*
+				 *   TODO: 1. Add some statements for checking the user
+				 */
+				if( x==-1 )
+				{
+					System.out.println("账号不存在！");
+					break;
+				}
 				System.out.println("请输入密码:");
 				sc = new Scanner(System.in);
 				String pass = sc.next();
-				if(database.get_cs(u_name)){
+				if(database.get_cs(u_name)==IS_CUSTOMER){
+					/*
+					 *  TODO: 7. Use string.match to determine whether it's a customer or a staff
+					 */
 					while(!database.customer.get(x).password.equals(pass)){
 						if(database.customer.get(x).count == 3){
-							System.out.println("连续3次密码输入错误！账号已被冻结！请联系管理员解冻。");
+							System.out.println("连续3次密码输入错误！账号已被冻结！请联系管理员解冻。");// the account will be locked
 							break;
 						}
 						System.out.println("密码输入有误!请重新输入：");
 						sc = new Scanner(System.in);
 						pass = sc.next();
-						database.customer.get(x).count++;//错误次数加1
+						/*  [Has been down]
+						 *  TODO: 2.  Refactoring for customer.ger(x).count++.     
+						 */
+						database.customer.get(x).Increase_Password_Wrong_Times();// 错误次数加1
+						
 					}
-					database.customer.get(x).count=0;
-					temp_c = database.customer.get(x);
-					System.out.println("登录成功！");
-					login = true;
+					if(database.customer.get(x).count != 3)// if the account is not locked
+					/*  [Has been down]
+					 *  TODO: 8. Make it able to return to login interface, rather than make the user successfully sign in.
+					 */
+					{
+						database.customer.get(x).count=0;
+						temp_c = database.customer.get(x);
+						System.out.println("登录成功！");
+						login = true;
+					}
 				}
-				else{
+				else if(database.get_cs(u_name)==IS_STAFF){
 					while(!database.staff.get(x).get_password().equals(pass)){
 						System.out.println("密码输入有误!请重新输入：");
 						sc = new Scanner(System.in);
@@ -54,8 +81,9 @@ public class Service {
 					login = true;
 				}
 			}
+
 	//===========================主体业务部分=================================
-			if(database.get_cs(u_name)){
+			if(database.get_cs(u_name)==IS_CUSTOMER){
 				print_user();//打印界面	
 				sc = new Scanner(System.in);
 				select = sc.next().charAt(0);
@@ -77,7 +105,7 @@ public class Service {
 					login = false;
 				}
 			}
-			else{
+			else if(database.get_cs(u_name)==IS_STAFF){
 				print_staff();
 				sc = new Scanner(System.in);
 				select = sc.next().charAt(0);
@@ -104,6 +132,9 @@ public class Service {
 	
 	//(a),开户
 	public void Create_account(User_database database){
+		/*
+		 *   TODO: 3. Refactoring for judgement.   Using static int final USERNAME = 1, PASSWORD = 2, ID = 3, etc.
+		 */
 		System.out.println("输入开户账号，以“600”开头，8位数字");
 		Scanner sc = new Scanner(System.in);
 		String u_name = sc.next();//输入用户名
@@ -155,10 +186,14 @@ public class Service {
 		sc = new Scanner(System.in);//输入密码
 		String id = sc.next();
 		while(!id.matches("\\d{18}")){
+			/*
+			 *   TODO: 4. The loop may never end. Add some controllers.
+			 */
 			System.out.println("输入错误！请重新输入");
 			sc= new Scanner(System.in);
 			id = sc.next();
-		}System.out.println("输入密码：");
+		}
+		System.out.println("输入密码：");
 		sc = new Scanner(System.in);//输入密码
 		String pass = sc.next();
 		
@@ -175,7 +210,6 @@ public class Service {
 	//(c),查询
 	public void Show_user(String u_name,User_database database,Staff staff) throws Exception{
 		int x=database.get_order(database,u_name);//获得该账号的序列号
-		
 		if(x==-1)
 			System.out.println("未查到该用户！请检查所输入账号是否正确！");
 		else{
@@ -195,7 +229,6 @@ public class Service {
 	
 	//(d),存款
 	public void Deposit(String u_name,User_database database){
-
 		Scanner sc = new Scanner(System.in);
 		System.out.println("请输入金额");
 		sc = new Scanner(System.in);
@@ -317,6 +350,7 @@ public class Service {
 		else
 			System.out.println("该用户未被禁用，无法修改密码");
 	}
+	
 	//是否查询到该用户
 	public boolean search_account(User_database database,String u_name){
 		boolean x = false;

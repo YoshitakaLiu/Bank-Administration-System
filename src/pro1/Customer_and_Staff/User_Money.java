@@ -10,9 +10,9 @@ package pro1.Customer_and_Staff;
 public class User_Money {
 	public double rate;
 	int year;
-	String classification;
+	String classification; 
 	double money;
-	public User_Money(int y, double m){
+	public User_Money(int y, double m){ // constructor
 		set_rate(y);
 		money = m;
 		year = y;

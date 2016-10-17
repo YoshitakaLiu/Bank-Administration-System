@@ -14,6 +14,7 @@ public class Customer extends User{
 	public int count;//用来判断密码错误次数
 	public String password;//密码
 	public ArrayList<User_Money> money;
+	
 	//开户时使用的构造函数
 	public Customer(String u_name,String id,String tele,
 			String loc,double m,String pass){
@@ -36,6 +37,11 @@ public class Customer extends User{
 		for(int i=0;i<money.size();i++)
 			t += money.get(i).money;
 		balance = t;
+	}
+	
+	public void Increase_Password_Wrong_Times(){
+		if( count<3 )
+			count++;
 	}
 	
 	//(a),存款
