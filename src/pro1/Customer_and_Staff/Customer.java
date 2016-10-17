@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import pro2.Database.User_database;
 import pro3.Service.Service;
-
+ 
 public class Customer extends User{
 	public String user_name;//用户名
 	public String ID;//身份证号

@@ -2,7 +2,7 @@ package pro4.test;
 import pro1.Customer_and_Staff.*;
 import pro2.Database.*;
 import pro3.Service.*;
-
+  
 public class test {
 	public static void main(String[] args) throws Exception {
 		Service Serve = new Service();//设置一个服务器

@@ -3,7 +3,7 @@ package pro2.Database;
 import java.util.ArrayList;
 
 import pro1.Customer_and_Staff.*;
-
+ 
 public class User_database {
 	public final int IS_NONE = 0;
 	public final int IS_CUSTOMER = 1;
