@@ -17,6 +17,7 @@ public class User_database {
 	}
 	
 	//判断是员工还是用户
+	//To check whether the user is a customer or a staff
 	public int get_cs(String temp){
 		int cs = IS_NONE;
 		if(temp.matches("\\d{4}"))

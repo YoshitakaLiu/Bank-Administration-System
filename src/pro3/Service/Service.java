@@ -7,9 +7,14 @@ import pro2.Database.User_database;
 
 public class Service {
 	
-	public final int IS_NONE = 0;
+	public final int IS_NONE     = 0;
 	public final int IS_CUSTOMER = 1;
-	public final int IS_STAFF = 2;
+	public final int IS_STAFF    = 2;
+	public final int BANK_ID   = 1;
+	public final int PASSWORD  = 2;
+	public final int IDENTITY  = 3;
+	public final int PHONE_NO  = 4;
+	
 	
 	//登录界面
 	public void Login(Service sev_temp,User_database database) throws Exception{
@@ -30,7 +35,7 @@ public class Service {
 				sc = new Scanner(System.in);
 				u_name = sc.next();
 				int x=database.get_order(database,u_name); // 获得用户在arraylist中的序号
-				/*
+				/*   [Has been down]
 				 *   TODO: 1. Add some statements for checking the user
 				 */
 				if( x==-1 )
@@ -42,7 +47,7 @@ public class Service {
 				sc = new Scanner(System.in);
 				String pass = sc.next();
 				if(database.get_cs(u_name)==IS_CUSTOMER){
-					/*
+					/*  [Has been down]
 					 *  TODO: 7. Use string.match to determine whether it's a customer or a staff
 					 */
 					while(!database.customer.get(x).password.equals(pass)){
@@ -83,7 +88,7 @@ public class Service {
 			}
 
 	//===========================主体业务部分=================================
-			if(database.get_cs(u_name)==IS_CUSTOMER){
+			if(temp_c!=null){
 				print_user();//打印界面	
 				sc = new Scanner(System.in);
 				select = sc.next().charAt(0);
@@ -105,7 +110,7 @@ public class Service {
 					login = false;
 				}
 			}
-			else if(database.get_cs(u_name)==IS_STAFF){
+			else if(temp_s!=null){
 				print_staff();
 				sc = new Scanner(System.in);
 				select = sc.next().charAt(0);
@@ -127,18 +132,23 @@ public class Service {
 					login = false;
 				}
 			}
+			temp_c = null;
+			temp_s = null;
+			login = false;//用来记录登录是否成功
+			u_name = null;
+			type = IS_NONE;
 		}
 	}
 	
 	//(a),开户
 	public void Create_account(User_database database){
-		/*
-		 *   TODO: 3. Refactoring for judgement.   Using static int final USERNAME = 1, PASSWORD = 2, ID = 3, etc.
+		/*   [Has been down]
+		 *   TODO: 3. Refactoring for judgement.   Using int final USERNAME = 1, PASSWORD = 2, ID = 3, etc.
 		 */
 		System.out.println("输入开户账号，以“600”开头，8位数字");
 		Scanner sc = new Scanner(System.in);
 		String u_name = sc.next();//输入用户名
-		while((!u_name.matches("600\\d{5}"))||(search_account(database,u_name))){
+		while((check_type(u_name)!=BANK_ID)||(search_account(database,u_name))){
 			System.out.println("输入错误！请重新输入");
 			sc= new Scanner(System.in);
 			u_name = sc.next();
@@ -146,7 +156,7 @@ public class Service {
 		System.out.println("输入6位数字密码");
 		sc = new Scanner(System.in);//输入密码
 		String pass = sc.next();
-		while(!pass.matches("\\d{6}")){
+		while(check_type(pass)!=PASSWORD){
 			System.out.println("输入错误！请重新输入");
 			sc= new Scanner(System.in);
 			pass = sc.next();
@@ -154,7 +164,7 @@ public class Service {
 		System.out.println("输入身份证号");
 		sc = new Scanner(System.in);//输入密码
 		String id = sc.next();
-		while(!id.matches("\\d{18}")){
+		while(check_type(id)!=IDENTITY){
 			System.out.println("输入错误！请重新输入");
 			sc= new Scanner(System.in);
 			id = sc.next();
@@ -162,7 +172,7 @@ public class Service {
 		System.out.println("输入手机号码");//输入手机号
 		sc = new Scanner(System.in);
 		String tele = sc.next();
-		while(!tele.matches("\\d{11}")){
+		while(check_type(tele)!=PHONE_NO){
 			System.out.println("输入错误！请重新输入");
 			sc= new Scanner(System.in);
 			tele = sc.next();
@@ -185,18 +195,24 @@ public class Service {
 		Scanner sc = new Scanner(System.in);
 		sc = new Scanner(System.in);//输入密码
 		String id = sc.next();
-		while(!id.matches("\\d{18}")){
-			/*
+		int count = 1; // record the times that the user enter his id.
+		while(check_type(id)!=IDENTITY){
+			/*   [Has been down]
 			 *   TODO: 4. The loop may never end. Add some controllers.
 			 */
 			System.out.println("输入错误！请重新输入");
 			sc= new Scanner(System.in);
 			id = sc.next();
+			count ++;
+			if( count==3 )
+			{
+				System.out.println("连续输错3次，已返回上一级！");
+				return;
+			}
 		}
 		System.out.println("输入密码：");
 		sc = new Scanner(System.in);//输入密码
 		String pass = sc.next();
-		
 		int x=database.get_order(id,database);//获得该账号的序列号
 		if(database.customer.get(x).password.equals(pass)){
 			database.customer.remove(x);
@@ -238,7 +254,7 @@ public class Service {
 		System.out.println("请输入存款年限");
 		sc = new Scanner(System.in);
 		int y = sc.nextInt();
-		while(y==1&&y==2&&y!=3&&y!=5&&y!=0){
+		while(y!=1&&y!=2&&y!=3&&y!=5&&y!=0){
 			System.out.println("请输入正确的存款年限（0代表活期存款）!");
 			sc = new Scanner(System.in);
 			y = sc.nextInt();
@@ -304,7 +320,7 @@ public class Service {
 			System.out.println("请输入重置后的6位密码：");
 			sc = new Scanner(System.in);
 			String pass = sc.next();
-			while(!pass.matches("\\d{6}")){
+			while(check_type(pass)!=PASSWORD){
 				System.out.println("输入错误！请重新输入");
 				sc= new Scanner(System.in);
 				pass = sc.next();
@@ -339,7 +355,7 @@ public class Service {
 			System.out.println("请输入重置后的6位密码：");
 			sc = new Scanner(System.in);
 			String pass = sc.next();
-			while(!pass.matches("\\d{6}")){
+			while(check_type(pass)!=PASSWORD){
 				System.out.println("输入错误！请重新输入");
 				sc= new Scanner(System.in);
 				pass = sc.next();
@@ -361,6 +377,7 @@ public class Service {
 		}
 		return x;
 	}
+	
 	//查询余额======(c)
 	public void Show_balance(String u_name,User_database database){
 		int x=database.get_order(database,u_name);//获得该账号的序列号
@@ -374,7 +391,11 @@ public class Service {
 		String u_name = sc.next();//输入用户名
 		int x=database.get_order(database,u_name);//获得该账号的序列号
 		int y=database.get_order(database,u_name2);//获得该账号的序列号
-
+		if( x==y ) // if the user wants to transfer money to himself
+		{
+			System.out.println("错误！收款方和付款方为同一账户！");
+			return ;
+		}
 		while(x==-1){
 			System.out.println("未查到该用户！请检查所输入账号是否正确！");
 			u_name = sc.next();
@@ -398,7 +419,7 @@ public class Service {
 		System.out.println("请输入新的电话号码：");
 		Scanner sc = new Scanner(System.in);
 		String tele = sc.next();
-		while(!tele.matches("\\d{11}")){
+		while(check_type(tele)!=PHONE_NO){
 			System.out.println("输入错误！请重新输入");
 			sc= new Scanner(System.in);
 			tele = sc.next();
@@ -431,7 +452,7 @@ public class Service {
 			System.out.println("请输入重置后的6位密码：");//第一次输入
 			sc = new Scanner(System.in);
 			String pass2 = sc.next();
-			while(!pass2.matches("\\d{6}")){
+			while(check_type(pass2)!=PASSWORD){
 				System.out.println("输入错误！请重新输入");
 				sc= new Scanner(System.in);
 				pass2 = sc.next();
@@ -440,7 +461,7 @@ public class Service {
 			System.out.println("请再次输入重置后的6位密码：");
 			sc = new Scanner(System.in);
 			String pass3 = sc.next();
-			while(  (!pass3.matches("\\d{6}"))  ||  (!pass2.equals(pass3))  ){//当输入不是6位数字，或者两次输入密码不相同时
+			while(  (check_type(pass3)!=PASSWORD)  ||  (!pass2.equals(pass3))  ){//当输入不是6位数字，或者两次输入密码不相同时
 				System.out.println("输入错误！请重新输入");
 				sc= new Scanner(System.in);
 				pass3 = sc.next();
@@ -460,6 +481,18 @@ public class Service {
 		System.out.println("============选择服务===========");
 		System.out.println("开户（a）         销户（b）       查询客户（c）\n存款（d）        取款（e）        修改管理员信息（f）\n解冻账户（g）        注销（i）");
 		System.out.println("=============================");
+	}
+	
+	private int check_type(String str){
+		if(str.matches("600\\d{5}"))
+			return BANK_ID;
+		if(str.matches("\\d{6}"))
+			return PASSWORD;
+		if(str.matches("\\d{18}"))
+			return IDENTITY;
+		if(str.matches("\\d{11}"))
+			return PHONE_NO;
+		return -1;
 	}
 }
 
